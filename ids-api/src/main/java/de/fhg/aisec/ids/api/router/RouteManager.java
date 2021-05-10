@@ -89,32 +89,32 @@ public interface RouteManager {
   @NonNull
   Map<String, String> listEndpoints();
 
-  /**
-   * Save a route, replacing it with a new representation within the same context
-   *
-   * @param routeId ID of the route to save
-   * @param routeRepresentation The new textual representation of the route (XML etc.)
-   * @return The object representing the modified route
-   * @throws RouteException If the route does not exist or some Exception was thrown during route
-   *     replacement.
-   */
-  @NonNull
-  RouteObject saveRoute(@NonNull String routeId, @NonNull String routeRepresentation)
-      throws RouteException;
+//  /**
+//   * Save a route, replacing it with a new representation within the same context
+//   *
+//   * @param routeId ID of the route to save
+//   * @param routeRepresentation The new textual representation of the route (XML etc.)
+//   * @return The object representing the modified route
+//   * @throws RouteException If the route does not exist or some Exception was thrown during route
+//   *     replacement.
+//   */
+//  @NonNull
+//  RouteObject saveRoute(@NonNull String routeId, @NonNull String routeRepresentation)
+//      throws RouteException;
 
-  /**
-   * Adds a route and starts it.
-   *
-   * <p>Endpoint declarations must be supported by the underlying implementation.
-   *
-   * <p>If the route id already exists, this method will throw a RouteException and not overwrite
-   * the existing route.
-   *
-   * @param routeDefinition Textual representation of the route (XML etc.)
-   * @throws RouteException if a route with the same id already exists or if any Exception is thrown
-   *     during loading and starting the route.
-   */
-  void addRoute(@NonNull String routeDefinition) throws RouteException;
+//  /**
+//   * Adds a route and starts it.
+//   *
+//   * <p>Endpoint declarations must be supported by the underlying implementation.
+//   *
+//   * <p>If the route id already exists, this method will throw a RouteException and not overwrite
+//   * the existing route.
+//   *
+//   * @param routeDefinition Textual representation of the route (XML etc.)
+//   * @throws RouteException if a route with the same id already exists or if any Exception is thrown
+//   *     during loading and starting the route.
+//   */
+//  void addRoute(@NonNull String routeDefinition) throws RouteException;
 
   /**
    * Removes a route from one endpoint to another.
@@ -128,18 +128,18 @@ public interface RouteManager {
   @SuppressWarnings("unused")
   void delRoute(@NonNull String routeId);
 
-  /**
-   * Returns the given route in its original representation of the implementing engine.
-   *
-   * <p>Note that this method may return null if the implementing engine does not support a textual
-   * route configuration.
-   *
-   * <p>For Apache Camel, this method will return the XML-based Camel DSL configuration file.
-   *
-   * @param routeId ID of the route to retrieve the String representation for
-   * @return String representation of the route
-   */
-  String getRouteAsString(@NonNull String routeId);
+//  /**
+//   * Returns the given route in its original representation of the implementing engine.
+//   *
+//   * <p>Note that this method may return null if the implementing engine does not support a textual
+//   * route configuration.
+//   *
+//   * <p>For Apache Camel, this method will return the XML-based Camel DSL configuration file.
+//   *
+//   * @param routeId ID of the route to retrieve the String representation for
+//   * @return String representation of the route
+//   */
+//  String getRouteAsString(@NonNull String routeId);
 
   /**
    * Returns a List of URIs of the given route's inputs (from definitions)
@@ -150,13 +150,13 @@ public interface RouteManager {
   @NonNull
   List<String> getRouteInputUris(@NonNull String routeId);
 
-  /**
-   * Returns aggregated runtime metrics of all installed routes.
-   *
-   * @return Map&lt;k,v&gt; where k is a string indicating the route id.
-   */
-  @NonNull
-  Map<String, RouteMetrics> getRouteMetrics();
+//  /**
+//   * Returns aggregated runtime metrics of all installed routes.
+//   *
+//   * @return Map&lt;k,v&gt; where k is a string indicating the route id.
+//   */
+//  @NonNull
+//  Map<String, RouteMetrics> getRouteMetrics();
 
   /**
    * Returns the given route configuration in a Prolog representation.

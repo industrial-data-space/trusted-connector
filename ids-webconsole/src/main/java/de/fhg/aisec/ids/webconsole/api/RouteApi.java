@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +58,8 @@ import java.util.Map;
 public class RouteApi {
   private static final Logger LOG = LoggerFactory.getLogger(RouteApi.class);
 
-  private @NonNull RouteManager rm;
+  private @NonNull
+  final RouteManager rm;
 
   public RouteApi(@Autowired @NonNull RouteManager rm) {
     this.rm = rm;
@@ -101,18 +101,18 @@ public class RouteApi {
     return oRoute;
   }
 
-  @GET
-  @Path("/getAsString/{id}")
-  @ApiOperation(value = "Gets an XML representation of a Camel route.")
-  @Produces(MediaType.TEXT_PLAIN)
-  @AuthorizationRequired
-  public String getAsString(@ApiParam(value = "Route ID") @PathParam("id") String id) {
-    String routeAsString = rm.getRouteAsString(id);
-    if (routeAsString == null) {
-      throw new NotFoundException("Route not found");
-    }
-    return routeAsString;
-  }
+//  @GET
+//  @Path("/getAsString/{id}")
+//  @ApiOperation(value = "Gets an XML representation of a Camel route.")
+//  @Produces(MediaType.TEXT_PLAIN)
+//  @AuthorizationRequired
+//  public String getAsString(@ApiParam(value = "Route ID") @PathParam("id") String id) {
+//    String routeAsString = rm.getRouteAsString(id);
+//    if (routeAsString == null) {
+//      throw new NotFoundException("Route not found");
+//    }
+//    return routeAsString;
+//  }
 
   /** Stop a route based on an id. */
   @GET
@@ -130,37 +130,37 @@ public class RouteApi {
     }
   }
 
-  @POST
-  @Path("/save/{id}")
-  @ApiOperation(value = "Save changes to a route. ")
-  @Consumes(MediaType.TEXT_PLAIN)
-  @Produces(MediaType.APPLICATION_JSON)
-  @AuthorizationRequired
-  public Result saveRoute(@PathParam("id") @NonNull String id, @NonNull String routeDefinition) {
-    try {
-      rm.saveRoute(id, routeDefinition);
-      return new Result();
-    } catch (Exception e) {
-      LOG.warn(e.getMessage(), e);
-      return new Result(false, e.getMessage());
-    }
-  }
+//  @POST
+//  @Path("/save/{id}")
+//  @ApiOperation(value = "Save changes to a route. ")
+//  @Consumes(MediaType.TEXT_PLAIN)
+//  @Produces(MediaType.APPLICATION_JSON)
+//  @AuthorizationRequired
+//  public Result saveRoute(@PathParam("id") @NonNull String id, @NonNull String routeDefinition) {
+//    try {
+//      rm.saveRoute(id, routeDefinition);
+//      return new Result();
+//    } catch (Exception e) {
+//      LOG.warn(e.getMessage(), e);
+//      return new Result(false, e.getMessage());
+//    }
+//  }
 
-  @PUT
-  @Path("/add")
-  @ApiOperation(value = "Adds a new route, provided as Camel XML.")
-  @Consumes(MediaType.TEXT_PLAIN)
-  @Produces(MediaType.APPLICATION_JSON)
-  @AuthorizationRequired
-  public Result addRoute(@NonNull String routeDefinition) {
-    try {
-      rm.addRoute(routeDefinition);
-      return new Result();
-    } catch (Exception e) {
-      LOG.warn(e.getMessage(), e);
-      return new Result(false, e.getMessage());
-    }
-  }
+//  @PUT
+//  @Path("/add")
+//  @ApiOperation(value = "Adds a new route, provided as Camel XML.")
+//  @Consumes(MediaType.TEXT_PLAIN)
+//  @Produces(MediaType.APPLICATION_JSON)
+//  @AuthorizationRequired
+//  public Result addRoute(@NonNull String routeDefinition) {
+//    try {
+//      rm.addRoute(routeDefinition);
+//      return new Result();
+//    } catch (Exception e) {
+//      LOG.warn(e.getMessage(), e);
+//      return new Result(false, e.getMessage());
+//    }
+//  }
 
   /** Stop a route based on its id. */
   @GET
@@ -181,57 +181,57 @@ public class RouteApi {
     }
   }
 
-  /** Get runtime metrics of a route */
-  @GET
-  @ApiOperation(value = "Get runtime metrics of a route", response = RouteMetrics.class)
-  @Path("/metrics/{id}")
-  @AuthorizationRequired
-  public RouteMetrics getMetrics(@PathParam("id") String routeId) {
-    return rm.getRouteMetrics().get(routeId);
-  }
+//  /** Get runtime metrics of a route */
+//  @GET
+//  @ApiOperation(value = "Get runtime metrics of a route", response = RouteMetrics.class)
+//  @Path("/metrics/{id}")
+//  @AuthorizationRequired
+//  public RouteMetrics getMetrics(@PathParam("id") String routeId) {
+//    return rm.getRouteMetrics().get(routeId);
+//  }
 
-  /** Get aggregated runtime metrics of all routes */
-  @GET
-  @ApiOperation(
-    value = "Get aggregated runtime metrics of all routes",
-    response = RouteMetrics.class
-  )
-  @Path("/metrics")
-  @AuthorizationRequired
-  public RouteMetrics getMetrics() {
-    return aggregateMetrics(rm.getRouteMetrics().values());
-  }
+//  /** Get aggregated runtime metrics of all routes */
+//  @GET
+//  @ApiOperation(
+//    value = "Get aggregated runtime metrics of all routes",
+//    response = RouteMetrics.class
+//  )
+//  @Path("/metrics")
+//  @AuthorizationRequired
+//  public RouteMetrics getMetrics() {
+//    return aggregateMetrics(rm.getRouteMetrics().values());
+//  }
 
-  /**
-   * Aggregates metrics of several rules
-   *
-   * @param currentMetrics List of RouteMetrics to process
-   * @return The aggregated RouteMetrics object
-   */
-  private RouteMetrics aggregateMetrics(Collection<RouteMetrics> currentMetrics) {
-    RouteMetrics metrics = new RouteMetrics();
-    metrics.setCompleted(currentMetrics.stream().mapToLong(RouteMetrics::getCompleted).sum());
-    metrics.setFailed(currentMetrics.stream().mapToLong(RouteMetrics::getFailed).sum());
-    metrics.setFailuresHandled(
-        currentMetrics.stream().mapToLong(RouteMetrics::getFailuresHandled).sum());
-    metrics.setInflight(currentMetrics.stream().mapToLong(RouteMetrics::getInflight).sum());
-    metrics.setMaxProcessingTime(
-        currentMetrics.stream().mapToLong(RouteMetrics::getMaxProcessingTime).max().orElse(0));
-    // This is technically nonsense, as average values of average values are not really
-    // the average values of the single elements, but it's the best aggregation we can get.
-    metrics.setMeanProcessingTime(
-        (long)
-            currentMetrics
-                .stream()
-                .mapToLong(RouteMetrics::getMeanProcessingTime)
-                .filter(i -> i >= 0)
-                .average()
-                .orElse(.0));
-    metrics.setMinProcessingTime(
-        currentMetrics.stream().mapToLong(RouteMetrics::getMinProcessingTime).min().orElse(0));
-    metrics.setCompleted(currentMetrics.stream().mapToLong(RouteMetrics::getCompleted).sum());
-    return metrics;
-  }
+//  /**
+//   * Aggregates metrics of several rules
+//   *
+//   * @param currentMetrics List of RouteMetrics to process
+//   * @return The aggregated RouteMetrics object
+//   */
+//  private RouteMetrics aggregateMetrics(Collection<RouteMetrics> currentMetrics) {
+//    RouteMetrics metrics = new RouteMetrics();
+//    metrics.setCompleted(currentMetrics.stream().mapToLong(RouteMetrics::getCompleted).sum());
+//    metrics.setFailed(currentMetrics.stream().mapToLong(RouteMetrics::getFailed).sum());
+//    metrics.setFailuresHandled(
+//        currentMetrics.stream().mapToLong(RouteMetrics::getFailuresHandled).sum());
+//    metrics.setInflight(currentMetrics.stream().mapToLong(RouteMetrics::getInflight).sum());
+//    metrics.setMaxProcessingTime(
+//        currentMetrics.stream().mapToLong(RouteMetrics::getMaxProcessingTime).max().orElse(0));
+//    // This is technically nonsense, as average values of average values are not really
+//    // the average values of the single elements, but it's the best aggregation we can get.
+//    metrics.setMeanProcessingTime(
+//        (long)
+//            currentMetrics
+//                .stream()
+//                .mapToLong(RouteMetrics::getMeanProcessingTime)
+//                .filter(i -> i >= 0)
+//                .average()
+//                .orElse(.0));
+//    metrics.setMinProcessingTime(
+//        currentMetrics.stream().mapToLong(RouteMetrics::getMinProcessingTime).min().orElse(0));
+//    metrics.setCompleted(currentMetrics.stream().mapToLong(RouteMetrics::getCompleted).sum());
+//    return metrics;
+//  }
 
   /**
    * Retrieve list of supported components (aka protocols which can be addressed by Camel)

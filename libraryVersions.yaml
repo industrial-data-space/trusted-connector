@@ -24,7 +24,7 @@ jaxbImpl: "2.3.3"
 jaxActivation: "1.2.0"
 
 # Starting with camel 3.1.0, XML dump features and metrics have been removed!
-camel: "3.0.1"
+camel: "3.7.4"
 camelHttp4: "3.0.0-M4"
 camelZeroMQ: "2.22.0"
 influxDB: "2.14"
